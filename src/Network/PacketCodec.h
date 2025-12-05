@@ -1,6 +1,7 @@
 #ifndef PACKET_CODEC_H
 #define PACKET_CODEC_H
 
+#include <cassert>
 #include <vector>
 #include <string>
 #include <cstring>
@@ -75,7 +76,7 @@ public:
     T Read() {
         static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable.");
         if (read_pos + sizeof(T) > buffer.size()) {
-            throw std::runtime_error("PacketCodec: insufficient data for read.");
+            assert(false && "PacketCodec: insufficient data for read.");
         }
         T value;
         std::memcpy(&value, buffer.data() + read_pos, sizeof(T));
@@ -86,7 +87,7 @@ public:
     std::string ReadString() {
         uint32_t len = Read<uint32_t>();
         if (read_pos + len > buffer.size()) {
-            throw std::runtime_error("PacketCodec: string length overflow.");
+            assert(false && "PacketCodec: string length overflow.");
         }
         std::string s(reinterpret_cast<const char*>(buffer.data() + read_pos), len);
         read_pos += len;
@@ -96,7 +97,7 @@ public:
     std::vector<uint8_t> ReadBytes() {
         uint32_t len = Read<uint32_t>();
         if (read_pos + len > buffer.size()) {
-            throw std::runtime_error("PacketCodec: byte array length overflow.");
+            assert(false && "PacketCodec: byte array length overflow.");
         }
         std::vector<uint8_t> data(buffer.begin() + read_pos, buffer.begin() + read_pos + len);
         read_pos += len;

@@ -67,7 +67,7 @@ public:
     template<typename T>
     T readBE() {
         static_assert(std::is_integral_v<T>, "readBE numeric only");
-        if (offset + sizeof(T) > view.size()) throw std::out_of_range("readBE overflow");
+        if (offset + sizeof(T) > view.size()) assert(false && "readBE overflow");
         T val = readBE<T>(view.data() + offset, view.size() - offset);
         offset += sizeof(T);
         return val;
@@ -76,7 +76,7 @@ public:
     template<typename T>
     T readRaw() {
         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
-        if (offset + sizeof(T) > view.size()) throw std::out_of_range("readRaw overflow");
+        if (offset + sizeof(T) > view.size()) assert(false && "readRaw overflow");
         T val;
         std::memcpy(&val, view.data() + offset, sizeof(T));
         offset += sizeof(T);
@@ -106,7 +106,7 @@ public:
 
     std::string readString() {
         uint32_t len = readVarUInt32();
-        if (offset + len > view.size()) throw std::out_of_range("string overflow");
+        if (offset + len > view.size()) assert(false && "string overflow");
         std::string s(reinterpret_cast<const char*>(view.data() + offset), len);
         offset += len;
         return s;

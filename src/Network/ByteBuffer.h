@@ -1,6 +1,7 @@
 #ifndef BYTEBUFFER_H
 #define BYTEBUFFER_H
 
+#include <cassert>
 #include <vector>
 #include <cstdint>
 #include <cstring>
@@ -19,7 +20,7 @@ public:
     size_t size() const { return size_; }
 
     ByteView slice(size_t offset, size_t length) const {
-        if (offset + length > size_) throw std::out_of_range("slice out of range");
+        if (offset + length > size_) assert(false && "slice out of range");
         return ByteView(data_ + offset, length);
     }
 };

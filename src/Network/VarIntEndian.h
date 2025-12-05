@@ -1,6 +1,7 @@
 #ifndef VARINTENDIAN_H
 #define VARINTENDIAN_H
 
+#include <cassert>
 #include <cstdint>
 #include <vector>
 #include <stdexcept>
@@ -28,7 +29,7 @@ inline std::enable_if_t<std::is_integral_v<T>, T>
 readBE(const uint8_t* ptr, size_t available) {
     static_assert(std::is_integral_v<T>, "readBE requires integral type");
     size_t n = sizeof(T);
-    if (available < n) throw std::out_of_range("readBE overflow");
+    if (available < n) assert(false && "readBE overflow");
     T value = 0;
     for (size_t i = 0; i < n; ++i) {
         value = static_cast<T>((value << 8) | ptr[i]);
@@ -61,9 +62,9 @@ inline std::pair<uint64_t, size_t> decodeVarUInt64(const uint8_t* ptr, size_t av
             return { result, i };
         }
         shift += 7;
-        if (shift >= 64) throw std::out_of_range("varuint64 overflow");
+        if (shift >= 64) assert(false && "varuint64 overflow");
     }
-    throw std::out_of_range("varuint64 truncated");
+    assert(false && "varuint64 truncated");
 }
 
 //
@@ -82,7 +83,7 @@ inline std::vector<uint8_t> encodeVarUInt32(uint32_t v) {
 }
 inline std::pair<uint32_t, size_t> decodeVarUInt32(const uint8_t* ptr, size_t available) {
     auto [v, n] = decodeVarUInt64(ptr, available);
-    if (v > UINT32_MAX) throw std::out_of_range("varuint32 overflow");
+    if (v > UINT32_MAX) assert(false && "varuint32 overflow");
     return { static_cast<uint32_t>(v), n };
 }
 inline std::vector<uint8_t> encodeVarInt32(int32_t v) {
